@@ -1,6 +1,8 @@
 import React from 'react';
 import './App.css';
 import { Form, Button, Table, Modal } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faStar } from '@fortawesome/free-solid-svg-icons'
 
 
 const API_KEY = '29ccffe5';
@@ -11,8 +13,8 @@ class PeixeTest extends React.Component {
   constructor(props) {
     super(props);
     this.state = {MovieName: '',
-                  response:[],
-                  responset: [],
+                  TableData:[],
+                  MovieData: [],
                   Favorites: [],
                   Show: false,
                   Title: '',
@@ -28,14 +30,16 @@ class PeixeTest extends React.Component {
                   Plot: '',
                   Language: '',
                   Country: '',
-                  Awards: '' };
+                  Awards: '',
+                  StarColor: "#828282",
+                  InFavorites: false};
       
     this.changeInput = this.changeInput.bind(this);
     this.hideShow = this.hideShow.bind(this)
-    this.find= this.find.bind(this)
-    this.favorites= this.favorites.bind(this)
     this.movieDescription= this.movieDescription.bind(this)
-    this.addFavorites= this.addFavorites.bind(this)   
+    this.favorites= this.favorites.bind(this)
+    this.addFavorites= this.addFavorites.bind(this)      
+    this.find= this.find.bind(this)
     this.getHeader = this.getHeader.bind(this);
     this.getRowsData = this.getRowsData.bind(this);
   }
@@ -53,26 +57,33 @@ class PeixeTest extends React.Component {
     try {
       const params = "?t="+input.Title+"&apikey="+API_KEY;
       const resp = await fetch(URL+params);
-      const responset = await resp.json();
-      if (responset.Response === 'False') {
-        alert(responset.Error);
-        console.log(responset.Error)
+      const MovieData = await resp.json();
+      if (MovieData.Response === 'False') {
+        alert(MovieData.Error);
+        console.log(MovieData.Error)
       }else {
-        this.setState({responset: responset})
+        if (this.state.Favorites.filter((element) => {return element.Title === input.Title}).length == 1){
+            this.setState({StarColor : "#ffff00",
+                            InFavorites: true})
+        }else{
+          this.setState({StarColor : "#828282",
+                          InFavorites: false})
+        }
+        this.setState({MovieData: MovieData})
         this.setState({Title: input.Title,
                        Year: input.Year,
                        Poster: input.Poster,
-                       Rated: this.state.responset.Rated,
-                       Released: this.state.responset.Released,
-                       RunTime: this.state.responset.Runtime,
-                       Genre: this.state.responset.Genre,
-                       Director: this.state.responset.Director,
-                       Writer: this.state.responset.Writer,
-                       Actors: this.state.responset.Actors,
-                       Plot: this.state.responset.Plot,
-                       Language: this.state.responset.Language,
-                       Country: this.state.responset.Country,
-                       Awards: this.state.responset.Awards,
+                       Rated: this.state.MovieData.Rated,
+                       Released: this.state.MovieData.Released,
+                       RunTime: this.state.MovieData.Runtime,
+                       Genre: this.state.MovieData.Genre,
+                       Director: this.state.MovieData.Director,
+                       Writer: this.state.MovieData.Writer,
+                       Actors: this.state.MovieData.Actors,
+                       Plot: this.state.MovieData.Plot,
+                       Language: this.state.MovieData.Language,
+                       Country: this.state.MovieData.Country,
+                       Awards: this.state.MovieData.Awards,
                        Show: true})
       } 
     }catch (error){
@@ -82,17 +93,22 @@ class PeixeTest extends React.Component {
   }
     
   favorites(){
-      this.setState({response: this.state.Favorites})
+      this.setState({TableData: this.state.Favorites})
   }
 
-  addFavorites(){
-    this.setState({
-        Favorites: this.state.Favorites.concat({Title: this.state.Title, Year: this.state.Year, Poster: this.state.Poster})
-    })
-  }
-
-  deleteFavorites(){
-
+  addFavorites(event){
+    
+    if (!this.state.InFavorites){
+        this.setState({StarColor: "#ffff00",
+                        InFavorites: true,
+                      Favorites: this.state.Favorites.concat({Title: this.state.Title, Year: this.state.Year, Poster: this.state.Poster})
+                       })
+    }else{
+      this.setState({StarColor: "#828282",
+                      InFavorites: false,
+                      Favorites: this.state.Favorites.filter((element) => {return element.Title != this.state.Title})
+                       })
+    }
   }
 
   async find(){
@@ -104,7 +120,7 @@ class PeixeTest extends React.Component {
         alert(response.Error);
         console.log(response.Error)
       }else {
-        this.setState({response: response.Search})
+        this.setState({TableData: response.Search})
       } 
     }catch (error){
       alert(error.message);
@@ -112,7 +128,6 @@ class PeixeTest extends React.Component {
     }
   }
 
-   
   getHeader = function(){
     return (
       <>
@@ -124,7 +139,7 @@ class PeixeTest extends React.Component {
   }
    
   getRowsData = function(){ 
-    return( this.state.response.map(( value) => {
+    return( this.state.TableData.map(( value) => {
       return (
         <tr onClick={() => this.movieDescription(value)}>
           <td> {value.Title} </td> 
@@ -162,7 +177,7 @@ class PeixeTest extends React.Component {
           </Modal.Header>
           <Modal.Body>
             <p> Year: {this.state.Year}</p>
-            <img class="center" src={this.state.Poster} />
+            <img src={this.state.Poster} />
             <p> Rated: {this.state.Rated} </p>
             <p> Released: {this.state.Released} </p>
             <p> Duration: {this.state.RunTime} </p>
@@ -177,7 +192,7 @@ class PeixeTest extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.hideShow}> Close </Button>
-            <Button variant="primary" onClick={this.addFavorites}> Agregar favoritos </Button>
+            <FontAwesomeIcon icon={faStar} onClick={this.addFavorites} style={{ color: this.state.StarColor }}  />
           </Modal.Footer>
         </Modal>
       </div>
