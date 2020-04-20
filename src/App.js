@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { Form, Button, Table, Modal } from 'react-bootstrap';
+import { Form, Button, Table, Modal, Container, Row, Col} from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar } from '@fortawesome/free-solid-svg-icons'
 
@@ -153,48 +153,55 @@ class PeixeTest extends React.Component {
   render() {
     return (
       <div className="App">
-        <Form>
-          <Form.Group controlId="formBasictext">
-            <Form.Label>Nombre de Película</Form.Label>
-            <Form.Control type="text" value ={this.state.MovieName} placeholder="Ingrese Nombre de Película" onChange={this.changeInput} />
-          </Form.Group>
-          <Button variant="primary" type="button" onClick={this.find}> Buscar </Button>
-          <Button variant="primary" type="button" onClick={this.favorites}> favoritos </Button>
-        </Form>
-        <div>
-          <Table>
-            <thead>
-              <tr>{this.getHeader()}</tr>
-            </thead>
-            <tbody>
-              {this.getRowsData()}
-            </tbody>
-          </Table>
-        </div>
-        <Modal show={this.state.Show}>
-          <Modal.Header closeButton onClick={this.hideShow}>
-              <Modal.Title> {this.state.Title} </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p> Year: {this.state.Year}</p>
-            <img src={this.state.Poster} />
-            <p> Rated: {this.state.Rated} </p>
-            <p> Released: {this.state.Released} </p>
-            <p> Duration: {this.state.RunTime} </p>
-            <p> Genere: {this.state.Genre} </p>
-            <p> Director: {this.state.Director} </p>
-            <p> Writer: {this.state.Writer} </p>
-            <p> Actors: {this.state.Actors} </p>
-            <p> Plot: {this.state.Plot} </p>
-            <p> Language: {this.state.Language} </p>
-            <p> Country: {this.state.Country} </p>
-            <p> Awards: {this.state.Awards} </p>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={this.hideShow}> Close </Button>
-            <FontAwesomeIcon icon={faStar} onClick={this.addFavorites} style={{ color: this.state.StarColor }}  />
-          </Modal.Footer>
-        </Modal>
+        <Container>
+          <Form>
+            <Form.Group controlId="formBasictext">
+              <Form.Label>Nombre de Película</Form.Label>
+              <Form.Control type="text" value ={this.state.MovieName} placeholder="Ingrese Nombre de Película" onChange={this.changeInput} />
+            </Form.Group>
+            <Button variant="primary" type="button" onClick={this.find}> Buscar </Button>
+            <Button variant="primary" type="button" onClick={this.favorites}> favoritos </Button>
+          </Form>
+          <div>
+            <Table>
+              <thead>
+                <tr>{this.getHeader()}</tr>
+              </thead>
+              <tbody>
+                {this.getRowsData()}
+              </tbody>
+            </Table>
+          </div>
+          <Modal show={this.state.Show}>
+            <Modal.Header closeButton onClick={this.hideShow}>
+                <Modal.Title> {this.state.Title} </Modal.Title>
+            </Modal.Header>
+            <Modal.Body> 
+              <Row>
+                <Col sm={5}>
+                  <img src={this.state.Poster} />
+                </Col>
+                <Col sm={7}>
+                  <p> Rated: {this.state.Rated} </p> 
+                  <p> Released: {this.state.Released} </p>
+                  <p> Duration: {this.state.RunTime} </p>
+                  <p> Genere: {this.state.Genre} </p>
+                  <p> Director: {this.state.Director} </p>
+                  <p> Writer: {this.state.Writer} </p>
+                  <p> Actors: {this.state.Actors} </p>
+                  <p> Plot: {this.state.Plot} </p>
+                  <p> Language: {this.state.Language} </p>
+                  <p> Country: {this.state.Country} </p>
+                  <p> Awards: {this.state.Awards} </p>
+                </Col>
+              </Row>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={this.hideShow}> Close </Button>
+              <FontAwesomeIcon icon={faStar} onClick={this.addFavorites} style={{ color: this.state.StarColor }}  />
+            </Modal.Footer>
+          </Modal>
+        </Container>
       </div>
     );
   }
